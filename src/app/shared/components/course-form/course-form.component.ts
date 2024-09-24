@@ -23,7 +23,7 @@ export class CourseFormComponent {
     this.courseForm = this.fb.group({
       title: ["", [Validators.required, Validators.minLength(2)]],
       description: ["", [Validators.required, Validators.minLength(2)]],
-      author: ["", [Validators.pattern("^[a-zA-Z0-9 ]*$")]],
+      author: ["", [Validators.pattern("^[a-zA-Z0-9 ]*$"), Validators.minLength(2)]],
       authors: this.fb.array([]),
       duration: [0, [Validators.required, Validators.min(0)]],
     });
