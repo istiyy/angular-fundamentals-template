@@ -1,30 +1,44 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { BehaviorSubject, Observable } from "rxjs";
+import { SessionStorageService } from "./session-storage.service";
+
+interface User {
+  email: string;
+  password: string;
+}
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: "root",
 })
 export class AuthService {
-    login(user: any) { // replace 'any' with the required interface
-        // Add your code here
-    }
+  private isAuthorized$$ = new BehaviorSubject<boolean>(false);
+  public isAuthorized$: Observable<boolean> = this.isAuthorized$$.asObservable();
 
-    logout() {
-        // Add your code here
-    }
+  constructor(private http: HttpClient, private sessionService: SessionStorageService) {}
 
-    register(user: any) { // replace 'any' with the required interface
-        // Add your code here
-    }
+  login(user: User) {
+    return this.http.post("http://localhost:4000/api/login", { email: user.email, password: user.password });
+  }
 
-    get isAuthorised() {
-        // Add your code here. Get isAuthorized$$ value
-    }
+  logout() {
+    this.sessionService.deleteToken();
+    this.isAuthorised = false;
+  }
 
-    set isAuthorised(value: boolean) {
-        // Add your code here. Change isAuthorized$$ value
-    }
+  register(user: User) {
+    return this.http.post("http://localhost:4000/api/register", { email: user.email, password: user.password });
+  }
 
-    getLoginUrl() {
-        // Add your code here
-    }
+  get isAuthorised() {
+    return this.isAuthorized$$.value;
+  }
+
+  set isAuthorised(value: boolean) {
+    this.isAuthorized$$.next(value);
+  }
+
+  getLoginUrl() {
+    return "/login";
+  }
 }

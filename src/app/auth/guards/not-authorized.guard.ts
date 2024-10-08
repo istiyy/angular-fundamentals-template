@@ -1,8 +1,18 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
+import { AuthService } from "../services/auth.service";
+import { Router } from "@angular/router";
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: "root",
 })
 export class NotAuthorizedGuard {
-    // Add your code here
+  constructor(private authService: AuthService, private router: Router) {}
+
+  canActivate() {
+    if (!this.authService.isAuthorised) {
+      return true;
+    }
+    this.router.navigate(["/courses"]);
+    return false;
+  }
 }
