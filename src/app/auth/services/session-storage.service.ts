@@ -1,7 +1,6 @@
 import { Inject, Injectable } from "@angular/core";
 
-const TOKEN = "SESSION_TOKEN"; // Use this constant for the session storage entry key
-// Add your code here
+const TOKEN = "SESSION_TOKEN";
 
 @Injectable({
   providedIn: "root",

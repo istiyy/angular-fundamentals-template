@@ -1,42 +1,101 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
+import { BehaviorSubject, Observable } from "rxjs";
+import { CoursesService } from "./courses.service";
+
+interface Author {
+  id: string;
+  name: string;
+}
+
+interface Course {
+  id: string;
+  title: string;
+  description: string;
+  creationDate: string;
+  duration: number;
+  topRated: boolean;
+  authors: Author[];
+}
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: "root",
 })
 export class CoursesStoreService {
-    getAll(){
-        // Add your code here
-    }
+  private coursesSubject = new BehaviorSubject<Course[]>([]);
+  private loadingSubject = new BehaviorSubject<boolean>(false);
 
-    createCourse(course: any) { // replace 'any' with the required interface
-        // Add your code here
-    }
+  courses$ = this.coursesSubject.asObservable();
+  loading$ = this.loadingSubject.asObservable();
 
-    getCourse(id: string) {
-        // Add your code here
-    }
+  constructor(private coursesService: CoursesService) {}
 
-    editCourse(id: string, course: any) { // replace 'any' with the required interface
-        // Add your code here
-    }
+  getAll() {
+    this.loadingSubject.next(true);
+    this.coursesService.getAll().subscribe((courses) => {
+      this.coursesSubject.next(courses);
+      this.loadingSubject.next(false);
+    });
+  }
 
-    deleteCourse(id: string) {
-        // Add your code here
-    }
+  createCourse(course: Course) {
+    this.loadingSubject.next(true);
+    this.coursesService.createCourse(course).subscribe(() => {
+      this.getAll();
+    });
+  }
 
-    filterCourses(value: string) {
-        // Add your code here
-    }
+  getCourse(id: string): Observable<Course> {
+    return this.coursesService.getCourse(id);
+  }
 
-    getAllAuthors() {
-        // Add your code here
-    }
+  editCourse(id: string, course: Course) {
+    this.loadingSubject.next(true);
+    this.coursesService.editCourse(id, course).subscribe(() => {
+      this.getAll();
+    });
+  }
 
-    createAuthor(name: string) {
-        // Add your code here
-    }
+  deleteCourse(id: string) {
+    this.loadingSubject.next(true);
+    this.coursesService.deleteCourse(id).subscribe(() => {
+      this.getAll();
+    });
+  }
 
-    getAuthorById(id: string) {
-        // Add your code here
-    }
+  filterCourses(value: string) {
+    this.loadingSubject.next(true);
+    this.coursesService.filterCourses({ search: [value] }).subscribe((courses) => {
+      this.coursesSubject.next(courses);
+      this.loadingSubject.next(false);
+    });
+  }
+
+  getAllAuthors(): Observable<Author[]> {
+    return this.coursesService.getAllAuthors();
+  }
+
+  createAuthor(name: string) {
+    this.loadingSubject.next(true);
+    this.coursesService.createAuthor(name).subscribe(() => {
+      this.loadingSubject.next(false);
+    });
+  }
+
+  getAuthorById(id: string): Observable<Author> {
+    return this.coursesService.getAuthorById(id);
+  }
+
+  editAuthor(id: string, name: string) {
+    this.loadingSubject.next(true);
+    this.coursesService.editAuthor(id, name).subscribe(() => {
+      this.loadingSubject.next(false);
+    });
+  }
+
+  deleteAuthor(id: string) {
+    this.loadingSubject.next(true);
+    this.coursesService.deleteAuthor(id).subscribe(() => {
+      this.loadingSubject.next(false);
+    });
+  }
 }

@@ -6,6 +6,12 @@ import { Observable } from "rxjs";
   providedIn: "root",
 })
 export class CoursesService {
+  editAuthor(id: string, name: string) {
+    return this.http.put(`${this.baseUrl}/authors/${id}`, { name });
+  }
+  deleteAuthor(id: string) {
+    return this.http.delete(`${this.baseUrl}/authors/${id}`);
+  }
   private baseUrl = "http://localhost:4000/api/courses";
 
   constructor(private http: HttpClient) {}
