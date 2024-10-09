@@ -9,7 +9,7 @@ export class NotAuthorizedGuard {
   constructor(private authService: AuthService, private router: Router) {}
 
   canActivate() {
-    if (!this.authService.isAuthorised) {
+    if (!this.authService.isAuthorized) {
       return true;
     }
     this.router.navigate(["/courses"]);

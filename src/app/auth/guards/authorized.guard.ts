@@ -9,7 +9,7 @@ export class AuthorizedGuard {
   constructor(private authService: AuthService, private router: Router) {}
 
   canLoad() {
-    if (this.authService.isAuthorised) {
+    if (this.authService.isAuthorized) {
       return true;
     }
 
