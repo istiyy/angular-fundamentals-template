@@ -29,6 +29,7 @@ export class AuthService {
       map((response) => {
         this.sessionService.setToken(response.token);
         this.isAuthorized = true;
+        return;
       })
     );
   }

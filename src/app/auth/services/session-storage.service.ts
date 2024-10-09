@@ -6,7 +6,7 @@ const TOKEN = "SESSION_TOKEN";
   providedIn: "root",
 })
 export class SessionStorageService {
-  constructor(@Inject("window") private window: Window) {}
+  constructor(@Inject(Window) private window: Window) {}
 
   setToken(token: string) {
     this.window.sessionStorage.setItem(TOKEN, token);
