@@ -1,19 +1,23 @@
-import { Injectable } from "@angular/core";
-import { Router } from "@angular/router";
-import { AuthService } from "../services/auth.service";
+import { Injectable } from '@angular/core';
+import { CanLoad, Route, UrlSegment, Router, UrlTree } from '@angular/router';
+import { Observable } from 'rxjs';
+import { AuthService } from '../services/auth.service';
 
 @Injectable({
-  providedIn: "root",
+  providedIn: 'root'
 })
-export class AuthorizedGuard {
+export class AuthorizedGuard implements CanLoad {
+
   constructor(private authService: AuthService, private router: Router) {}
 
-  canLoad() {
-    if (this.authService.isAuthorized) {
+  canLoad(
+    route: Route,
+    segments: UrlSegment[]
+  ): boolean | UrlTree | Observable<boolean | UrlTree> {
+    if (this.authService.isAuthorised) {
       return true;
+    } else {
+      return this.router.createUrlTree(['/login']);
     }
-
-    this.router.navigate([this.authService.getLoginUrl()]);
-    return false;
   }
 }

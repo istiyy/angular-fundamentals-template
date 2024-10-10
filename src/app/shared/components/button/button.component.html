@@ -1,7 +1,5 @@
-<div class="app-button">
-  <button class="btn btn-primary">
-    <fa-icon *ngIf="iconName" [icon]="iconName" class="button-icon"></fa-icon>
-
-    <span *ngIf="buttonText" class="font-semibold tracking-wide">{{ buttonText }}</span>
-  </button>
+<div class="app-button" [ngClass]="{'app-button__single-icon': iconName}">
+  <!-- Replace the text below with your code -->
+  <fa-icon *ngIf="iconName" [icon]="iconName"></fa-icon>
+  {{ buttonText }}
 </div>

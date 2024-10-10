@@ -1,17 +1,22 @@
-import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { Component, Input, Output, EventEmitter  } from '@angular/core';
 
 @Component({
-  selector: "app-search",
-  templateUrl: "./search.component.html",
-  styleUrls: ["./search.component.scss"],
+  selector: 'app-search',
+  templateUrl: './search.component.html',
+  styleUrls: ['./search.component.scss']
 })
 export class SearchComponent {
-  @Input() placeholder: string = "Search...";
-  @Output() search: EventEmitter<string> = new EventEmitter<string>();
+  @Input() placeholder: string = 'Input text';
+  @Output() search = new EventEmitter <string>();
 
-  searchTerm: string = "";
+  userSearchInput!: string;
 
-  onSearch() {
-    this.search.emit(this.searchTerm);
+  sendSearch(): void {
+      this.search.emit(this.userSearchInput || '')
   }
+
+  
+  // Use the name `placeholder` for the @Input.
+  // Use the name `search` for the @Output.
 }
+

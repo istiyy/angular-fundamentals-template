@@ -1,101 +1,105 @@
-import { Injectable } from "@angular/core";
-import { BehaviorSubject, Observable } from "rxjs";
-import { CoursesService } from "./courses.service";
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { CoursesService } from './courses.service';
+import { tap } from 'rxjs/operators'
+import { Course } from '@app/models/course.model';
 
-interface Author {
-  id: string;
-  name: string;
-}
-
-interface Course {
-  id: string;
-  title: string;
-  description: string;
-  creationDate: string;
-  duration: number;
-  topRated: boolean;
-  authors: Author[];
-}
 
 @Injectable({
-  providedIn: "root",
+    providedIn: 'root'
 })
 export class CoursesStoreService {
-  private coursesSubject = new BehaviorSubject<Course[]>([]);
-  private loadingSubject = new BehaviorSubject<boolean>(false);
+    private isLoading$$ = new BehaviorSubject<boolean>(false);
+    private courses$$ = new BehaviorSubject<Course[]>([]);
 
-  courses$ = this.coursesSubject.asObservable();
-  loading$ = this.loadingSubject.asObservable();
+    public isLoading$: Observable<boolean> = this.isLoading$$.asObservable()
+    public courses$: Observable<Course[]> = this.courses$$.asObservable()
 
-  constructor(private coursesService: CoursesService) {}
+    constructor(private coursesService: CoursesService){}
 
-  getAll() {
-    this.loadingSubject.next(true);
-    this.coursesService.getAll().subscribe((courses) => {
-      this.coursesSubject.next(courses);
-      this.loadingSubject.next(false);
-    });
-  }
+    private setLoading(isLoading: boolean): void {
+        this.isLoading$$.next(isLoading);
+    }
 
-  createCourse(course: Course) {
-    this.loadingSubject.next(true);
-    this.coursesService.createCourse(course).subscribe(() => {
-      this.getAll();
-    });
-  }
+    getAll(): void{
+        this.setLoading(true);
+        this.coursesService.getAll().pipe(
+            tap(courses => {
+                this.courses$$.next(courses);
+                this.setLoading(false);
+      })
+    ).subscribe();
+        // Add your code here
+    }
 
-  getCourse(id: string): Observable<Course> {
-    return this.coursesService.getCourse(id);
-  }
+    createCourse(course: Course): void { // replace 'any' with the required interface
+        this.setLoading(true);
+        this.coursesService.createCourse(course).pipe(
+          tap(() => {
+            this.getAll();
+          })
+        ).subscribe();
+        // Add your code here
+    }
 
-  editCourse(id: string, course: Course) {
-    this.loadingSubject.next(true);
-    this.coursesService.editCourse(id, course).subscribe(() => {
-      this.getAll();
-    });
-  }
+    getCourse(id: string): Observable<any> {
+        // Add your code here
+        return this.coursesService.getCourse(id)
+    }
 
-  deleteCourse(id: string) {
-    this.loadingSubject.next(true);
-    this.coursesService.deleteCourse(id).subscribe(() => {
-      this.getAll();
-    });
-  }
+    editCourse(id: string, course: Course): void { // replace 'any' with the required interface
+        this.setLoading(true);
+        this.coursesService.editCourse(id, course).pipe(
+            tap(() => {
+                this.getAll();
+      })
+    ).subscribe();
+        // Add your code here
+    }
 
-  filterCourses(value: string) {
-    this.loadingSubject.next(true);
-    this.coursesService.filterCourses({ search: [value] }).subscribe((courses) => {
-      this.coursesSubject.next(courses);
-      this.loadingSubject.next(false);
-    });
-  }
+    deleteCourse(id: string): void {
+        this.setLoading(true);
+        this.coursesService.deleteCourse(id).pipe(
+            tap(() => {
+                this.getAll()
+            })
+        ).subscribe();
+        // Add your code here
+    }
 
-  getAllAuthors(): Observable<Author[]> {
-    return this.coursesService.getAllAuthors();
-  }
+    filterCourses(value: string): void {
+        this.setLoading(true);
+        this.coursesService.filterCourses(value).pipe(
+            tap(courses => {
+                this.courses$$.next(courses);
+                this.setLoading(false);
+            })
+        ).subscribe();
+        // Add your code here
+    }
 
-  createAuthor(name: string) {
-    this.loadingSubject.next(true);
-    this.coursesService.createAuthor(name).subscribe(() => {
-      this.loadingSubject.next(false);
-    });
-  }
+    getAllAuthors(): void {
+        this.setLoading(true);
+        this.coursesService.getAllAuthors().pipe(
+            tap(() => {
+                this.setLoading(false);
+            })
+        ).subscribe()
+        // Add your code here
+    }
 
-  getAuthorById(id: string): Observable<Author> {
-    return this.coursesService.getAuthorById(id);
-  }
+    createAuthor(name: string): void {
+        this.setLoading(true);
+        this.coursesService.createAuthor(name).pipe(
+            tap(() => {
+                this.getAllAuthors();
+            })
+        ).subscribe()
+        // Add your code here
+    }
 
-  editAuthor(id: string, name: string) {
-    this.loadingSubject.next(true);
-    this.coursesService.editAuthor(id, name).subscribe(() => {
-      this.loadingSubject.next(false);
-    });
-  }
-
-  deleteAuthor(id: string) {
-    this.loadingSubject.next(true);
-    this.coursesService.deleteAuthor(id).subscribe(() => {
-      this.loadingSubject.next(false);
-    });
-  }
+    getAuthorById(id: string): Observable<any> {
+        return this.coursesService.getAuthorById(id)
+        // Add your code here
+    }
 }

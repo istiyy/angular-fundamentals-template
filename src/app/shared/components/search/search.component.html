@@ -1,8 +1,4 @@
 <div class="app-search">
-  <form (ngSubmit)="onSearch()">
-    <div class="flex justify-center items-center">
-      <input type="text" [(ngModel)]="searchTerm" [placeholder]="placeholder" name="searchInput" />
-      <app-button [buttonText]="'SEARCH'" (click)="onSearch()"></app-button>
-    </div>
-  </form>
+  <input type="text" [placeholder]="placeholder" [(ngModel)]="userSearchInput">
+  <app-button buttonText="search" (click)="sendSearch()"></app-button>
 </div>

@@ -1,62 +1,70 @@
-import { Injectable } from "@angular/core";
-import { HttpClient, HttpParams } from "@angular/common/http";
-import { Observable } from "rxjs";
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, of, switchMap } from 'rxjs';
+import { Course } from '@app/models/course.model';
 
 @Injectable({
-  providedIn: "root",
+    providedIn: 'root'
 })
 export class CoursesService {
-  editAuthor(id: string, name: string) {
-    return this.http.put(`${this.baseUrl}/authors/${id}`, { name });
-  }
-  deleteAuthor(id: string) {
-    return this.http.delete(`${this.baseUrl}/authors/${id}`);
-  }
-  private baseUrl = "http://localhost:4000/api/courses";
+    private apiUrl=`http://localhost:4000`
+    
+    constructor(private http: HttpClient){}
 
-  constructor(private http: HttpClient) {}
-
-  getAll(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/all`);
-  }
-
-  createCourse(course: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/add`, course);
-  }
-
-  editCourse(id: string, course: any): Observable<any> {
-    return this.http.put(`${this.baseUrl}/${id}`, course);
-  }
-
-  getCourse(id: string): Observable<any> {
-    return this.http.get(`${this.baseUrl}/${id}`);
-  }
-
-  deleteCourse(id: string): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/${id}`);
-  }
-
-  filterCourses(filters: { [key: string]: string[] }): Observable<any> {
-    let params = new HttpParams();
-    for (const key in filters) {
-      if (filters.hasOwnProperty(key)) {
-        filters[key].forEach((value) => {
-          params = params.append(key, value);
-        });
-      }
+    getAll(): Observable<any> {
+        return this.http.get(`${this.apiUrl}/courses/all`);
+        // Add your code here
     }
-    return this.http.get(`${this.baseUrl}/filter`, { params });
-  }
 
-  getAllAuthors(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/authors`);
-  }
+    createCourse(course: Course): Observable<Course> { // replace 'any' with the required interface
+        return this.http.post<Course>(`${this.apiUrl}/courses/add`, course)
+        // Add your code here
+    }
 
-  createAuthor(name: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/authors`, { name });
-  }
+    editCourse(id: string, course: Course): Observable<Course> { // replace 'any' with the required interface
+        return this.http.put<Course>(`${this.apiUrl}/courses/${id}`, course)
+        // Add your code here
+    }
 
-  getAuthorById(id: string): Observable<any> {
-    return this.http.get(`${this.baseUrl}/authors/${id}`);
-  }
+    getCourse(id: string): Observable<any> {
+        return this.http.get(`${this.apiUrl}/courses/${id}`)
+        // Add your code here
+    }
+
+    deleteCourse(id: string): Observable<any> {
+        return this.http.delete(`${this.apiUrl}/courses/${id}`)
+        // Add your code here
+    }
+
+    
+    filterCourses(value: string): Observable<any> {
+        const makeRequest = (paramName: string): Observable<any> => {
+            const params: any = {};
+            params[paramName] = value;
+            return this.http.get(`${this.apiUrl}/courses/filter`, { params });
+        };
+    
+        return makeRequest('title').pipe(
+            switchMap(response => response.result.length ? of(response) : makeRequest('description')),
+            switchMap(response => response.result.length ? of(response) : makeRequest('duration')),
+            switchMap(response => response.result.length ? of(response) : makeRequest('creationDate')),
+        );
+        // Add your code here */
+    }
+        
+   
+    getAllAuthors(): Observable<any> {
+        return this.http.get(`${this.apiUrl}/authors/all`);
+        // Add your code here
+    }
+
+    createAuthor(name: string): Observable<any> {
+        return this.http.post(`${this.apiUrl}/authors/add`, { name });
+        // Add your code here
+    }
+
+    getAuthorById(id: string): Observable<any> {
+        return this.http.get(`${this.apiUrl}/authors/${id}`)
+        // Add your code here
+    }
 }
